@@ -1,0 +1,11 @@
+import { useState } from 'react';
+import { FiPlus, FiTrash2 } from 'react-icons/fi';
+import AppShell from '../components/AppShell';
+
+export default function TaskManager() {
+  const [task, setTask] = useState('');
+  const [tasks, setTasks] = useState(() => JSON.parse(localStorage.getItem('rhm_tasks') || '[]'));
+  const save = (next) => { setTasks(next); localStorage.setItem('rhm_tasks', JSON.stringify(next)); };
+  const addTask = (event) => { event.preventDefault(); if (!task.trim()) return; save([...tasks, { id: Date.now(), text: task.trim(), done: false }]); setTask(''); };
+  return <AppShell><div className="page"><div className="page-heading"><div><p className="eyebrow">Maintenance</p><h1>Task manager</h1><p>Keep track of road inspections and repair follow-ups.</p></div></div><section className="simple-grid"><article className="panel form-panel"><h2>Add maintenance task</h2><form className="task-input" onSubmit={addTask}><div className="input-shell"><input value={task} onChange={(event) => setTask(event.target.value)} placeholder="e.g. Inspect expressway rough patch" /></div><button className="primary-button" aria-label="Add task"><FiPlus /></button></form><div className="task-list">{tasks.length === 0 ? <div className="empty-copy">No tasks yet. Add your first inspection or repair follow-up.</div> : tasks.map((item) => <div className="task-row" key={item.id}><input type="checkbox" checked={item.done} onChange={() => save(tasks.map((entry) => entry.id === item.id ? { ...entry, done: !entry.done } : entry))} /><span style={{ textDecoration: item.done ? 'line-through' : 'none', color: item.done ? 'var(--muted)' : 'inherit' }}>{item.text}</span><button onClick={() => save(tasks.filter((entry) => entry.id !== item.id))}><FiTrash2 /></button></div>)}</div></article><article className="panel form-panel"><h2>Suggested workflow</h2><p className="login-copy">Use tasks to turn poor-condition samples and citizen reports into field actions. Tasks are stored in this browser for the restored local demo.</p><div className="insight">Prioritize corridors with repeated poor readings, assign an inspection, and close the item after maintenance verification.</div></article></section></div></AppShell>;
+}
