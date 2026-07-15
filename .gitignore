@@ -9,4 +9,5 @@ frontend/.env
 .DS_Store
 .venv/
 tmp/
+screenshots/
 npm-debug.log*
